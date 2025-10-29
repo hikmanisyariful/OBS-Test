@@ -15,11 +15,20 @@ export default defineConfig([
 
   // Project rules
   {
-    files: ["**/*.{ts,tsx,js,jsx}"],
+    files: ["**/*.{test,spec}.{ts,tsx,js,jsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "module",
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        vi: true,
+        describe: true,
+        it: true,
+        test: true,
+        expect: true,
+        beforeEach: true,
+        afterEach: true,
+      },
     },
     plugins: {
       "react-hooks": reactHooks,
