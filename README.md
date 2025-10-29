@@ -1,73 +1,100 @@
-# React + TypeScript + Vite
+# 🚀 OBS Test — Vite + React + TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React + Vite + TypeScript application built as part of a technical test.  
+This project demonstrates a minimal, fast, and well-structured setup using **Vite**, **React**, **TypeScript**, **ESLint**, **Prettier**, and **Vitest** for unit testing.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📖 Project Description
 
-## React Compiler
+This application is a basic **counter app** scaffolded with [Vite](https://vitejs.dev/) and [React](https://react.dev/).  
+It features:
+- ⚡ Fast dev environment using Vite
+- 💅 Code linting and formatting via ESLint + Prettier
+- 🧪 Unit testing with Vitest + React Testing Library
+- 🧱 Type-safe development using TypeScript
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend:** React 19 + TypeScript
+- **Build Tool:** Vite 7
+- **Linting:** ESLint (Flat Config)
+- **Formatting:** Prettier
+- **Testing:** Vitest + React Testing Library
+- **Deployment:** Vercel
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🧩 Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+obs-test/
+├── src/
+│   ├── components/
+│   │   ├── Counter.tsx
+│   ├── App.tsx
+│   ├── main.tsx
+├── tests/
+│   ├── Counter.test.tsx
+├── .eslintrc.js
+├── .prettierrc
+├── index.html
+├── package.json
+├── README.md
+├── tsconfig.json
+├── vite.config.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+---
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+## ⚙️ Installation & Running Locally
+
+### 1️⃣ Install Dependencies
+```bash
+npm install
+```
+
+### 2️⃣ Run the Development Server
+```bash
+npm run dev
+```
+
+---
+
+## 🧪 Running Tests
+
+### Run all unit tests
+```bash
+npm run test
+```
+
+### Run tests in watch mode
+```bash
+npm run test:watch
+```
+
+### Generate coverage report
+```bash
+npm run test:cov
+```
+
+---
+
+## 🧹 Linting & Formatting
+
+### Check linting issues
+```bash
+npm run lint
+```
+
+### Format all files
+```bash
+npm run format
+```
+
+### Check format only
+```bash
+npm run format:check
 ```
