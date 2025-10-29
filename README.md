@@ -3,6 +3,8 @@
 A simple React + Vite + TypeScript application built as part of a technical test.  
 This project demonstrates a minimal, fast, and well-structured setup using **Vite**, **React**, **TypeScript**, **ESLint**, **Prettier**, and **Vitest** for unit testing.
 
+Live Demo: [https://obs-test-three.vercel.app/](https://obs-test-three.vercel.app/)
+
 ---
 
 ## 📖 Project Description
