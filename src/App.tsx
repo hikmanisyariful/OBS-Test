@@ -1,11 +1,11 @@
 import "./App.css";
-import { UserForm } from "./components/user-form";
+import Header from "./components/Header";
 import { UserList } from "./components/user-list";
 
 function App() {
   return (
     <>
-      <UserForm />
+      <Header />
       <UserList />
     </>
   );

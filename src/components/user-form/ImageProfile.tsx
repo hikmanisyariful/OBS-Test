@@ -1,17 +1,12 @@
-import { Avatar, Box, Button, Skeleton, Stack } from "@mui/material";
+import { Avatar, Box, Skeleton, Stack } from "@mui/material";
 
 type Props = {
   avatarUrl: string | undefined;
-  onReset: () => void;
-  onChange: (newAvatarUrl: string) => void;
+  onReset?: () => void;
+  onChange?: (newAvatarUrl: string) => void;
 };
 
-export default function ImageProfile({ avatarUrl, onReset, onChange }: Props) {
-  const handleChangeAvatar = () => {
-    const newAvatarUrl = "";
-    onChange(newAvatarUrl);
-  };
-
+export default function ImageProfile({ avatarUrl }: Props) {
   const isLoading = false;
 
   return (
@@ -28,21 +23,6 @@ export default function ImageProfile({ avatarUrl, onReset, onChange }: Props) {
           <Skeleton variant="circular" width={96} height={96} />
         )}
       </Box>
-
-      <div className="flex flex-col items-start gap-1 justify-start h-[96px] gap-2">
-        <Button variant="contained" onClick={handleChangeAvatar} disabled={isLoading}>
-          Change Avatar
-        </Button>
-        <Button
-          variant="text"
-          color="error"
-          onClick={onReset}
-          disabled={isLoading}
-          sx={{ textAlign: "start" }}
-        >
-          Reset
-        </Button>
-      </div>
     </Stack>
   );
 }

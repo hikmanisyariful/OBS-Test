@@ -1,4 +1,4 @@
-import { Box, Typography, Stack, Button } from "@mui/material";
+import { Box, Stack, Button, Typography } from "@mui/material";
 import ImageProfile from "./ImageProfile";
 import { useForm, FormProvider } from "react-hook-form";
 import RHFTextField from "../hooks/RHFTextField";
@@ -13,7 +13,13 @@ type FormValues = {
   company: string;
 };
 
-export default function Container() {
+export default function Container({
+  isEdit = false,
+  onClose,
+}: {
+  isEdit?: boolean;
+  onClose?: () => void;
+}) {
   const methods = useForm<FormValues>({
     mode: "onSubmit",
     defaultValues: {
@@ -46,14 +52,17 @@ export default function Container() {
         flexDirection="column"
         gap={3}
       >
-        <Typography variant="h5" gutterBottom>
-          User Form
-        </Typography>
+        <div className="w-full flex justify-center">
+          <Typography variant="h5" gutterBottom>
+            {isEdit ? "Edit User profile" : "Add New User"}
+          </Typography>
+        </div>
 
-        <ImageProfile avatarUrl="" onReset={() => {}} onChange={() => {}} />
+        <div className="w-full flex justify-center">
+          <ImageProfile avatarUrl="" onReset={() => {}} onChange={() => {}} />
+        </div>
 
         <Box display="flex" flexDirection="column" gap={2}>
-          {/* Row 1 */}
           <Box
             display="flex"
             gap={2}
@@ -76,7 +85,6 @@ export default function Container() {
             </Box>
           </Box>
 
-          {/* Row 2 */}
           <Box
             display="flex"
             gap={2}
@@ -111,12 +119,19 @@ export default function Container() {
           <RHFTextField id="company" name="company" label="Company" requiredMessage />
         </Box>
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
-          <Button type="button" variant="outlined" onClick={() => reset()}>
-            Reset
+        <Stack direction="row" spacing={2} justifyContent="flex-end" mt={3}>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={() => {
+              reset();
+              onClose?.();
+            }}
+          >
+            Cancel
           </Button>
           <Button data-testid="submit-user-form" type="submit" variant="contained">
-            Submit
+            {isEdit ? "Save" : "Add"}
           </Button>
         </Stack>
       </Box>

@@ -17,6 +17,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import Action from "./Action";
+import { ModalUserDelete, ModalUserForm } from "../modal";
 
 interface User {
   id: number;
@@ -91,6 +92,10 @@ function Profile({ user }: { user: User }) {
 }
 
 export default function TableUser() {
+  const [isEditForm, setIsEditForm] = React.useState(false);
+  const [openModalUserForm, setOpenModalUserForm] = React.useState(false);
+  const [openModalConfirmDelete, setOpenModalConfirmDelete] = React.useState(false);
+
   // daftar id yang terpilih
   const [selected, setSelected] = React.useState<number[]>([]);
 
@@ -112,134 +117,158 @@ export default function TableUser() {
   const focusRow = (id: number) => setSelected([id]);
   const handleEdit = (id: number) => {
     // aksi edit…
+    setOpenModalUserForm(true);
     console.log("edit", id);
+    setIsEditForm(true);
   };
   const handleDelete = (id: number) => {
     // aksi delete…
     console.log("delete", id);
+    setOpenModalConfirmDelete(true);
   };
 
   return (
-    <Box sx={{ width: "100vw", px: { xs: 1, sm: 2, md: 4 }, py: 3 }}>
-      {/* Toolbar sederhana yang menampilkan jumlah pilihan */}
-      <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end gap-2">
-        {selected.length > 0 ? (
+    <>
+      <ModalUserForm
+        open={openModalUserForm}
+        onClose={() => setOpenModalUserForm(false)}
+        isEdit={isEditForm}
+      />
+      <ModalUserDelete
+        open={openModalConfirmDelete}
+        onClose={() => setOpenModalConfirmDelete(false)}
+      />
+
+      <Box sx={{ width: "100vw", px: { xs: 1, sm: 2, md: 4 }, py: 3 }}>
+        {/* Toolbar sederhana yang menampilkan jumlah pilihan */}
+        <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end gap-2">
+          {selected.length > 0 ? (
+            <Button
+              id="delete-selection-button"
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={() => {
+                setOpenModalConfirmDelete(true);
+              }}
+              disabled={selected.length === 0}
+              className="order-2 sm:order-1"
+            >
+              Delete {selected.length} {selected.length === 1 ? "user" : "users"}
+            </Button>
+          ) : null}
+
           <Button
-            id="delete-selection-button"
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => {}}
-            disabled={selected.length === 0}
-            className="order-2 sm:order-1"
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setIsEditForm(false);
+              setOpenModalUserForm(true);
+              toggleAll(false);
+            }}
+            className="order-1 sm:order-2"
           >
-            Delete {selected.length} {selected.length === 1 ? "user" : "users"}
+            Add New User
           </Button>
-        ) : null}
+        </div>
 
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {}}
-          className="order-1 sm:order-2"
+        <Toolbar
+          data-testid="table-user-toolbar"
+          disableGutters
+          sx={{
+            mb: 1.5,
+            minHeight: 48,
+            color: selected.length ? "primary.main" : "inherit",
+          }}
         >
-          Add New User
-        </Button>
-      </div>
+          <Typography variant="body1">
+            {selected.length ? `${selected.length} selected` : "Users"}
+          </Typography>
+        </Toolbar>
 
-      <Toolbar
-        data-testid="table-user-toolbar"
-        disableGutters
-        sx={{
-          mb: 1.5,
-          minHeight: 48,
-          color: selected.length ? "primary.main" : "inherit",
-        }}
-      >
-        <Typography variant="subtitle2">
-          {selected.length ? `${selected.length} selected` : "Users"}
-        </Typography>
-      </Toolbar>
+        <TableContainer
+          component={Paper}
+          sx={{ width: "100%", overflowX: "auto", borderRadius: 2 }}
+        >
+          <Table sx={{ minWidth: 800 }} size="small" aria-label="responsive selectable table">
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    indeterminate={isIndeterminate}
+                    checked={isAllSelected}
+                    onChange={(e) => toggleAll(e.target.checked)}
+                    slotProps={{
+                      input: {
+                        "aria-label": "select all users",
+                      },
+                    }}
+                  />
+                </TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Profile</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Phone</TableCell>
+                <TableCell>Address</TableCell>
+                <TableCell>Website</TableCell>
+                <TableCell>Company</TableCell>
+                <TableCell padding="checkbox" align="right" />
+              </TableRow>
+            </TableHead>
 
-      <TableContainer component={Paper} sx={{ width: "100%", overflowX: "auto", borderRadius: 2 }}>
-        <Table sx={{ minWidth: 800 }} size="small" aria-label="responsive selectable table">
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  indeterminate={isIndeterminate}
-                  checked={isAllSelected}
-                  onChange={(e) => toggleAll(e.target.checked)}
-                  slotProps={{
-                    input: {
-                      "aria-label": "select all users",
-                    },
-                  }}
-                />
-              </TableCell>
-              <TableCell>ID</TableCell>
-              <TableCell>Profile</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Website</TableCell>
-              <TableCell>Company</TableCell>
-              <TableCell padding="checkbox" align="right" />
-            </TableRow>
-          </TableHead>
+            <TableBody>
+              {users.map((user) => {
+                const checked = isSelected(user.id);
+                return (
+                  <TableRow
+                    key={user.id}
+                    hover
+                    role="checkbox"
+                    aria-checked={checked}
+                    selected={checked}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={checked}
+                        onChange={() => toggleOne(user.id)}
+                        slotProps={{
+                          input: {
+                            "aria-label": `select user ${user.id}`,
+                          },
+                        }}
+                      />
+                    </TableCell>
 
-          <TableBody>
-            {users.map((user) => {
-              const checked = isSelected(user.id);
-              return (
-                <TableRow
-                  key={user.id}
-                  hover
-                  role="checkbox"
-                  aria-checked={checked}
-                  selected={checked}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={checked}
-                      onChange={() => toggleOne(user.id)}
-                      slotProps={{
-                        input: {
-                          "aria-label": `select user ${user.id}`,
-                        },
-                      }}
-                    />
-                  </TableCell>
+                    <TableCell>{user.id}</TableCell>
 
-                  <TableCell>{user.id}</TableCell>
+                    <TableCell>
+                      <Profile user={user} />
+                    </TableCell>
 
-                  <TableCell>
-                    <Profile user={user} />
-                  </TableCell>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone ?? "-"}</TableCell>
+                    <TableCell>{user.website ?? "-"}</TableCell>
+                    <TableCell>{user.company?.name ?? "-"}</TableCell>
 
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phone ?? "-"}</TableCell>
-                  <TableCell>{user.website ?? "-"}</TableCell>
-                  <TableCell>{user.company?.name ?? "-"}</TableCell>
-
-                  <TableCell padding="checkbox" align="right">
-                    <Action
-                      rowId={user.id}
-                      onFocusRow={focusRow}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+                    <TableCell padding="checkbox" align="right">
+                      <Action
+                        rowId={user.id}
+                        onFocusRow={focusRow}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   );
 }

@@ -106,8 +106,10 @@ export default function RHFTextField({
             size="small"
             variant="outlined"
             autoComplete={type === "email" ? "email" : type === "tel" ? "tel" : "on"}
-            inputProps={{
-              inputMode: type === "tel" ? "tel" : undefined,
+            slotProps={{
+              input: {
+                autoComplete: type === "email" ? "email" : type === "tel" ? "tel" : "on",
+              },
             }}
             {...textFieldProps}
           />
