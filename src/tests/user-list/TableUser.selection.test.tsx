@@ -3,11 +3,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TableUser from "../../components/user-list/TableUser";
 
-const getHeaderCheckbox = () =>
-  screen.getByLabelText(/select all users/i) as HTMLInputElement;
+const getHeaderCheckbox = () => screen.getByLabelText(/select all users/i) as HTMLInputElement;
 
-const getRowCheckboxes = () =>
-  screen.getAllByLabelText(/select user/i) as HTMLInputElement[];
+const getRowCheckboxes = () => screen.getAllByLabelText(/select user/i) as HTMLInputElement[];
 
 const getToolbar = () => screen.getByTestId("table-user-toolbar");
 
