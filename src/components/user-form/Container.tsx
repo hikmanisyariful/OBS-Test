@@ -41,7 +41,7 @@ export default function Container() {
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         p={3}
-        sx={{ width: "70%" }}
+        sx={{ width: "100%" }}
         display="flex"
         flexDirection="column"
         gap={3}
@@ -54,21 +54,47 @@ export default function Container() {
 
         <Box display="flex" flexDirection="column" gap={2}>
           {/* Row 1 */}
-          <Box display="flex" gap={2} flexWrap="wrap">
-            <Box flex={1} minWidth="250px">
+          <Box
+            display="flex"
+            gap={2}
+            flexWrap="wrap"
+            sx={{
+              "& > div": {
+                flex: {
+                  xs: "1 1 100%",
+                  sm: "1 1 48%",
+                },
+                minWidth: { xs: "100%", sm: "260px" },
+              },
+            }}
+          >
+            <Box flex={1}>
               <RHFTextField id="name" name="name" label="Name" requiredMessage />
             </Box>
-            <Box flex={1} minWidth="250px">
+            <Box flex={1}>
               <RHFTextField id="username" name="username" label="Username" requiredMessage />
             </Box>
           </Box>
 
           {/* Row 2 */}
-          <Box display="flex" gap={2} flexWrap="wrap">
-            <Box flex={1} minWidth="250px">
+          <Box
+            display="flex"
+            gap={2}
+            flexWrap="wrap"
+            sx={{
+              "& > div": {
+                flex: {
+                  xs: "1 1 100%",
+                  sm: "1 1 48%",
+                },
+                minWidth: { xs: "100%", sm: "260px" },
+              },
+            }}
+          >
+            <Box flex={1}>
               <RHFTextField id="email" name="email" label="Email" type="email" requiredMessage />
             </Box>
-            <Box flex={1} minWidth="250px">
+            <Box flex={1}>
               <RHFTextField
                 id="phone"
                 name="phone"

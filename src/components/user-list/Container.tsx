@@ -10,7 +10,6 @@ export default function Container() {
           User List
         </Typography>
       </div>
-      <div className="bg-blue-500 text-white p-4 rounded-lg">Hello Tailwind!</div>
 
       <TableUser />
     </div>
