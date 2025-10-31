@@ -46,13 +46,19 @@ export const SelectedUserProvider = ({ children }: { children: ReactNode }) => {
 
   const focusRow = (id: number) => setSelected([id]);
 
-  return <SelectedUserContext.Provider value={{
-    selected,
-    isAllSelected,
-    isIndeterminate,
-    toggleAll,
-    toggleOne,
-    isSelected,
-    focusRow,
-  }}>{children}</SelectedUserContext.Provider>;
+  return (
+    <SelectedUserContext.Provider
+      value={{
+        selected,
+        isAllSelected,
+        isIndeterminate,
+        toggleAll,
+        toggleOne,
+        isSelected,
+        focusRow,
+      }}
+    >
+      {children}
+    </SelectedUserContext.Provider>
+  );
 };

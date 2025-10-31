@@ -60,9 +60,7 @@ export default function RHFTextField({
 
   if (type === "tel") {
     defaultRules.validate = (val: string) =>
-      !val ||
-      isValidPhone(val) ||
-      "Invalid format for phone number (e.g. 08123456789 or +628123456789)";
+      !val || isValidPhone(val) || "Invalid format (e.g. 08123456789)";
   }
 
   // Gabungkan default rules + custom rules

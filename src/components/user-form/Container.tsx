@@ -2,6 +2,10 @@ import { Box, Stack, Button, Typography } from "@mui/material";
 import ImageProfile from "./ImageProfile";
 import { useForm, FormProvider } from "react-hook-form";
 import RHFTextField from "../hooks/RHFTextField";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { addUser, updateUser } from "../../redux/reducers/users";
+import { showAlert } from "../../redux/reducers/alert";
 
 type FormValues = {
   name: string;
@@ -20,8 +24,14 @@ export default function Container({
   isEdit?: boolean;
   onClose?: () => void;
 }) {
+  const dispatch = useAppDispatch();
+  const usersState = useAppSelector((state) => state.users);
+  const userFormState = useAppSelector((state) => state.userForm);
+
+  const [loading, setLoading] = useState(false);
+
   const methods = useForm<FormValues>({
-    mode: "onSubmit",
+    mode: "onChange",
     defaultValues: {
       name: "",
       username: "",
@@ -33,13 +43,82 @@ export default function Container({
     },
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, setValue } = methods;
 
-  const onSubmit = (data: FormValues) => {
-    console.log({ ...data });
-    alert("Submitted! Cek console untuk payload.");
-    // reset(); // aktifkan bila mau reset form setelah submit
+  const onSubmit = async (data: FormValues) => {
+    if (isEdit) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        dispatch(
+          updateUser({
+            id: detailUser!.id,
+            name: data.name,
+            username: data.username,
+            email: data.email,
+            phone: data.phone,
+            website: data.website,
+            address: { street: data.address },
+            company: { name: data.company },
+          })
+        );
+        dispatch(
+          showAlert({ message: "User saved!", severity: "success", autoHideDuration: 3000 })
+        );
+        onClose?.();
+      }, 1000);
+
+      return;
+    }
+
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      dispatch(
+        addUser({
+          id: newId,
+          name: data.name,
+          username: data.username,
+          email: data.email,
+          phone: data.phone,
+          website: data.website,
+          address: { street: data.address },
+          company: { name: data.company },
+        })
+      );
+      dispatch(
+        showAlert({
+          message: "User successfuly added!",
+          severity: "success",
+          autoHideDuration: 3000,
+        })
+      );
+      onClose?.();
+    }, 1000);
   };
+
+  const newId = useMemo(() => {
+    if (!usersState.userList.length) return 1;
+    const lastId = Math.max(...usersState.userList.map((u) => Number(u.id)));
+    return lastId + 1;
+  }, [usersState.userList]);
+
+  const detailUser = useMemo(() => {
+    if (!isEdit) return;
+    return usersState.userList?.find((user) => user.id === userFormState.editUserId);
+  }, [userFormState.editUserId, usersState.userList, isEdit]);
+
+  useEffect(() => {
+    if (!isEdit) return;
+    if (!detailUser) return;
+    setValue("name", detailUser.name);
+    setValue("username", detailUser.username);
+    setValue("email", detailUser.email);
+    setValue("phone", detailUser?.phone);
+    setValue("address", detailUser?.address?.street);
+    setValue("website", detailUser?.website);
+    setValue("company", detailUser?.company?.name ?? "");
+  }, [detailUser, setValue]);
 
   return (
     <FormProvider {...methods}>
@@ -59,7 +138,7 @@ export default function Container({
         </div>
 
         <div className="w-full flex justify-center">
-          <ImageProfile avatarUrl="" onReset={() => {}} onChange={() => {}} />
+          <ImageProfile id={detailUser?.id} newId={newId} />
         </div>
 
         <Box display="flex" flexDirection="column" gap={2}>
@@ -127,10 +206,17 @@ export default function Container({
               reset();
               onClose?.();
             }}
+            disabled={loading}
           >
             Cancel
           </Button>
-          <Button data-testid="submit-user-form" type="submit" variant="contained">
+          <Button
+            data-testid="submit-user-form"
+            type="submit"
+            variant="contained"
+            loading={loading}
+            disabled={loading}
+          >
             {isEdit ? "Save" : "Add"}
           </Button>
         </Stack>

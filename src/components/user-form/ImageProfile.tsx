@@ -1,13 +1,28 @@
+import { useEffect, useState } from "react";
 import { Avatar, Box, Skeleton, Stack } from "@mui/material";
 
 type Props = {
-  avatarUrl: string | undefined;
-  onReset?: () => void;
-  onChange?: (newAvatarUrl: string) => void;
+  id?: number;
+  newId: number;
 };
 
-export default function ImageProfile({ avatarUrl }: Props) {
-  const isLoading = false;
+export default function ImageProfile({ id, newId }: Props) {
+  const [loading, setLoading] = useState(true);
+  const [imgSrc, setImgSrc] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    if (!id) {
+      const newUrl = `https://picsum.photos/id/${newId}/96/96?${Date.now()}`;
+      setImgSrc(newUrl);
+      setLoading(false);
+      return;
+    }
+
+    const newUrl = `https://picsum.photos/id/${id}/96/96?${Date.now()}`;
+    setImgSrc(newUrl);
+    setLoading(false);
+  }, [id, newId]);
 
   return (
     <Stack
@@ -17,11 +32,20 @@ export default function ImageProfile({ avatarUrl }: Props) {
       sx={{ mb: 3 }}
     >
       <Box sx={{ position: "relative" }}>
-        {!isLoading ? (
-          <Avatar src={avatarUrl} alt="User avatar" sx={{ width: 96, height: 96 }} />
-        ) : (
-          <Skeleton variant="circular" width={96} height={96} />
-        )}
+        {loading && <Skeleton variant="circular" width={96} height={96} />}
+
+        <Avatar
+          key={id} // <== ini memaksa Avatar di-mount ulang setiap id berubah
+          src={imgSrc}
+          alt="User avatar"
+          sx={{
+            width: 96,
+            height: 96,
+            display: loading ? "none" : "block",
+          }}
+          onLoad={() => setLoading(false)}
+          onError={() => setLoading(false)}
+        />
       </Box>
     </Stack>
   );

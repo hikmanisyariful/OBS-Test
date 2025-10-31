@@ -12,14 +12,15 @@ import {
   TableRow,
   Checkbox,
   Toolbar,
-  Skeleton,
 } from "@mui/material";
 import Action from "./Action";
 import { ModalUserDelete, ModalUserForm } from "../modal";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { FetchState } from "../../interfaces/Fetch";
 import { useSelectedUserContextContext } from "./context/SelectedUserContext";
-import { setIsEditForm } from "../../redux/reducers/userForm";
+import { setEditUserId, setIsEditForm } from "../../redux/reducers/userForm";
+import TableUserSkeleton from "./TableUserSkeleton";
+import EmptyTable from "../common/EmptyTable";
 
 interface User {
   id: number;
@@ -58,11 +59,10 @@ export default function TableUser() {
 
   const handleEdit = (id: number) => {
     setOpenModalUserForm(true);
-    console.log("edit", id);
     dispatch(setIsEditForm(true));
+    dispatch(setEditUserId(id));
   };
-  const handleDelete = (id: number) => {
-    console.log("delete", id);
+  const handleDelete = () => {
     setOpenModalConfirmDelete(true);
   };
 
@@ -125,56 +125,62 @@ export default function TableUser() {
             </TableHead>
 
             <TableBody>
-              {usersState.status === FetchState.LOADING ? <Skeleton /> : null}
-              {usersState.status === FetchState.SUCCESS &&
-                usersState.userList.map((user) => {
-                  const checked = isSelected(user.id);
-                  return (
-                    <TableRow
-                      key={user.id}
-                      hover
-                      role="checkbox"
-                      aria-checked={checked}
-                      selected={checked}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={checked}
-                          onChange={() => toggleOne(user.id)}
-                          slotProps={{
-                            input: {
-                              "aria-label": `select user ${user.id}`,
-                            },
-                          }}
-                        />
-                      </TableCell>
+              {usersState.userList.map((user) => {
+                const checked = isSelected(user.id);
+                return (
+                  <TableRow
+                    key={user.id}
+                    hover
+                    role="checkbox"
+                    aria-checked={checked}
+                    selected={checked}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={checked}
+                        onChange={() => toggleOne(user.id)}
+                        slotProps={{
+                          input: {
+                            "aria-label": `select user ${user.id}`,
+                          },
+                        }}
+                      />
+                    </TableCell>
 
-                      <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.id}</TableCell>
 
-                      <TableCell>
-                        <Profile user={user} />
-                      </TableCell>
+                    <TableCell>
+                      <Profile user={user} />
+                    </TableCell>
 
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>{user.address.street ?? "-"}</TableCell>
-                      <TableCell>{user.website ?? "-"}</TableCell>
-                      <TableCell>{user.company?.name ?? "-"}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.phone}</TableCell>
+                    <TableCell>{user?.address?.street ?? "-"}</TableCell>
+                    <TableCell>{user.website ?? "-"}</TableCell>
+                    <TableCell>{user.company?.name ?? "-"}</TableCell>
 
-                      <TableCell padding="checkbox" align="right">
-                        <Action
-                          rowId={user.id}
-                          onFocusRow={focusRow}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                    <TableCell padding="checkbox" align="right">
+                      <Action
+                        rowId={user.id}
+                        onFocusRow={focusRow}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
+          {usersState.userList.length < 1 ? (
+            <EmptyTable
+              image="/images/empty-search.png"
+              title="No Users Available"
+              description="There are no users in the system yet. Start by adding a new user to manage profiles and information efficiently."
+            />
+          ) : null}
+          {usersState.status === FetchState.LOADING ? <TableUserSkeleton /> : null}
         </TableContainer>
       </Box>
     </>

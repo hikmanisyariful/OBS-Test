@@ -13,7 +13,7 @@ export default function Header() {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" noWrap>
-          OBS Technical Test 
+          OBS Technical Test
         </Typography>
       </Toolbar>
     </AppBar>
