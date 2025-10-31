@@ -1,6 +1,10 @@
-import users from "./reducers/users";
-import alert from "./reducers/alert";
+import { combineReducers } from "@reduxjs/toolkit";
+import usersReducer from "./reducers/users";
+import alertReducer from "./reducers/alert";
 
-const combinedReducers = { users, alert };
+const combinedReducers = combineReducers({
+  users: usersReducer,
+  alert: alertReducer,
+});
 
 export default combinedReducers;
