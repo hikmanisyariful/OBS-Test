@@ -1,7 +1,7 @@
 # 🚀 OBS Test — Vite + React + TypeScript
 
 A simple React + Vite + TypeScript application built as part of a technical test.  
-This project demonstrates a minimal, fast, and well-structured setup using **Vite**, **React**, **TypeScript**, **ESLint**, **Prettier**, and **Vitest** for unit testing.
+This project demonstrates a minimal, fast, and well-structured setup using **Vite**, **React**, **TypeScript**, **ESLint**, **Prettier**, **Vitest** for unit testing, and **Redux Toolkit** for state management.
 
 Live Demo: [https://obs-test-three.vercel.app/](https://obs-test-three.vercel.app/)
 
@@ -9,13 +9,8 @@ Live Demo: [https://obs-test-three.vercel.app/](https://obs-test-three.vercel.ap
 
 ## 📖 Project Description
 
-This application is a basic **counter app** scaffolded with [Vite](https://vitejs.dev/) and [React](https://react.dev/).  
-It features:
-
-- ⚡ Fast dev environment using Vite
-- 💅 Code linting and formatting via ESLint + Prettier
-- 🧪 Unit testing with Vitest + React Testing Library
-- 🧱 Type-safe development using TypeScript
+This project implements a User Management System that allows users to view, add, edit, and delete user records through a responsive and accessible interface.
+It is designed to highlight scalable frontend structure, state management with Redux Toolkit, form handling with React Hook Form, and component testing using Vitest.
 
 ---
 
@@ -26,6 +21,7 @@ It features:
 - **Linting:** ESLint (Flat Config)
 - **Formatting:** Prettier
 - **Testing:** Vitest + React Testing Library
+- **State Management:** Redux Toolkit & React Context
 - **Deployment:** Vercel
 
 ## 🧩 Project Structure
@@ -34,18 +30,21 @@ It features:
 obs-test/
 ├── src/
 │   ├── components/
-│   │   ├── Counter.tsx
-│   ├── App.tsx
+│   │   ├── user-list/
+│   │   ├── common/
+│   │   ├── modal/
+│   │   └── App.tsx
+│   ├── redux/
 │   ├── main.tsx
+│   └── index.css
 ├── tests/
-│   ├── Counter.test.tsx
+│   ├── mockUsers.ts
+│   └── renderWithAllProviders.tsx
 ├── .eslintrc.js
 ├── .prettierrc
-├── index.html
-├── package.json
-├── README.md
-├── tsconfig.json
 ├── vite.config.ts
+├── tsconfig.json
+└── README.md
 ```
 
 ---
