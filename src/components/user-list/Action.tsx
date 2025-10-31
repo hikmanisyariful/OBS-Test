@@ -1,17 +1,27 @@
 import { useState, MouseEvent } from "react";
-import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+  Divider,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import InfoIcon from "@mui/icons-material/InfoRounded";
 
 type Props = {
   rowId: number;
   onFocusRow: (id: number) => void; // set selected = [id]
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
+  onShow?: (id: number) => void;
 };
 
-const Action = ({ rowId, onFocusRow, onEdit, onDelete }: Props) => {
+const Action = ({ rowId, onFocusRow, onEdit, onDelete, onShow }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -33,6 +43,11 @@ const Action = ({ rowId, onFocusRow, onEdit, onDelete }: Props) => {
     handleClose();
   };
 
+  const handleShow = () => {
+    onShow?.(rowId);
+    handleClose();
+  };
+
   return (
     <>
       <Tooltip title="Actions">
@@ -48,12 +63,19 @@ const Action = ({ rowId, onFocusRow, onEdit, onDelete }: Props) => {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
+        <MenuItem onClick={handleShow}>
+          <ListItemIcon>
+            <InfoIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          <ListItemText>Detail</ListItemText>
+        </MenuItem>
         <MenuItem onClick={handleEdit}>
           <ListItemIcon>
             <EditIcon fontSize="small" color="primary" />
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
         </MenuItem>
+        <Divider flexItem />
         <MenuItem onClick={handleDelete}>
           <ListItemIcon>
             <DeleteIcon fontSize="small" color="error" />

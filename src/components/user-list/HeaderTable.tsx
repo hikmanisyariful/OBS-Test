@@ -4,13 +4,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useSelectedUserContextContext } from "./context/SelectedUserContext";
 import { ModalUserDelete, ModalUserForm } from "../modal";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { setIsEditForm } from "../../redux/reducers/userForm";
 
 export default function HeaderTable() {
-  const dispatch = useAppDispatch();
-  const userFormState = useAppSelector((state) => state.userForm);
-
   const { selected, toggleAll } = useSelectedUserContextContext();
   const [openModalUserForm, setOpenModalUserForm] = useState(false);
   const [openModalConfirmDelete, setOpenModalConfirmDelete] = useState(false);
@@ -20,18 +15,13 @@ export default function HeaderTable() {
   };
 
   const onHandleAdd = () => {
-    dispatch(setIsEditForm(false));
     setOpenModalUserForm(true);
     toggleAll(false);
   };
 
   return (
     <>
-      <ModalUserForm
-        open={openModalUserForm}
-        onClose={() => setOpenModalUserForm(false)}
-        isEdit={userFormState.isEdit}
-      />
+      <ModalUserForm open={openModalUserForm} onClose={() => setOpenModalUserForm(false)} />
       <ModalUserDelete
         open={openModalConfirmDelete}
         onClose={() => setOpenModalConfirmDelete(false)}

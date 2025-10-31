@@ -4,7 +4,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import RHFTextField from "../hooks/RHFTextField";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { useEffect, useMemo, useState } from "react";
-import { addUser, updateUser } from "../../redux/reducers/users";
+import { addUser, selectUsers, updateUser } from "../../redux/reducers/users";
 import { showAlert } from "../../redux/reducers/alert";
 
 type FormValues = {
@@ -20,13 +20,14 @@ type FormValues = {
 export default function Container({
   isEdit = false,
   onClose,
+  userId,
 }: {
   isEdit?: boolean;
   onClose?: () => void;
+  userId?: number;
 }) {
   const dispatch = useAppDispatch();
-  const usersState = useAppSelector((state) => state.users);
-  const userFormState = useAppSelector((state) => state.userForm);
+  const usersState = useAppSelector(selectUsers);
 
   const [loading, setLoading] = useState(false);
 
@@ -104,9 +105,9 @@ export default function Container({
   }, [usersState.userList]);
 
   const detailUser = useMemo(() => {
-    if (!isEdit) return;
-    return usersState.userList?.find((user) => user.id === userFormState.editUserId);
-  }, [userFormState.editUserId, usersState.userList, isEdit]);
+    if (!isEdit || !userId) return;
+    return usersState.userList?.find((user) => user.id === userId);
+  }, [userId, usersState.userList, isEdit]);
 
   useEffect(() => {
     if (!isEdit) return;

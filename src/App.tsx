@@ -4,7 +4,6 @@ import Header from "./components/common/Header";
 import { UserList } from "./components/user-list";
 import { getUsers } from "./redux/reducers/users";
 import { useAppDispatch } from "./redux/hooks";
-import { resetStateUserForm } from "./redux/reducers/userForm";
 import GlobalAlert from "./components/common/GlobalAlert";
 
 function App() {
@@ -17,12 +16,6 @@ function App() {
       promise.abort();
     };
   }, [dispatch]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetStateUserForm());
-    };
-  });
 
   return (
     <>

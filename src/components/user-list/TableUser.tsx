@@ -15,12 +15,13 @@ import {
 } from "@mui/material";
 import Action from "./Action";
 import { ModalUserDelete, ModalUserForm } from "../modal";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppSelector } from "../../redux/hooks";
 import { FetchState } from "../../interfaces/Fetch";
 import { useSelectedUserContextContext } from "./context/SelectedUserContext";
-import { setEditUserId, setIsEditForm } from "../../redux/reducers/userForm";
 import TableUserSkeleton from "./TableUserSkeleton";
 import EmptyTable from "../common/EmptyTable";
+import ModalUserDetail from "../modal/ModalUserDetail";
+import { selectUsers } from "../../redux/reducers/users";
 
 interface User {
   id: number;
@@ -47,36 +48,44 @@ function Profile({ user }: { user: User }) {
 }
 
 export default function TableUser() {
-  const dispatch = useAppDispatch();
-  const usersState = useAppSelector((state) => state.users);
-  const userFormState = useAppSelector((state) => state.userForm);
+  const usersState = useAppSelector(selectUsers);
+  const [isEditUserId, setIsEditUserId] = useState<number | undefined>();
 
   const { selected, isAllSelected, isIndeterminate, toggleAll, toggleOne, isSelected, focusRow } =
     useSelectedUserContextContext();
 
   const [openModalUserForm, setOpenModalUserForm] = useState(false);
   const [openModalConfirmDelete, setOpenModalConfirmDelete] = useState(false);
+  const [openModalUserDetail, setOpenModalUserDetail] = useState(false);
 
   const handleEdit = (id: number) => {
     setOpenModalUserForm(true);
-    dispatch(setIsEditForm(true));
-    dispatch(setEditUserId(id));
+    setIsEditUserId(id);
   };
   const handleDelete = () => {
     setOpenModalConfirmDelete(true);
+  };
+
+  const handleShowDetail = () => {
+    setOpenModalUserDetail(true);
   };
 
   return (
     <>
       <ModalUserForm
         open={openModalUserForm}
-        onClose={() => setOpenModalUserForm(false)}
-        isEdit={userFormState.isEdit}
+        onClose={() => {
+          setOpenModalUserForm(false);
+          setIsEditUserId(undefined);
+        }}
+        isEdit={isEditUserId !== undefined}
+        userId={isEditUserId}
       />
       <ModalUserDelete
         open={openModalConfirmDelete}
         onClose={() => setOpenModalConfirmDelete(false)}
       />
+      <ModalUserDetail open={openModalUserDetail} onClose={() => setOpenModalUserDetail(false)} />
 
       <Box sx={{ width: "100vw", px: { xs: 1, sm: 2, md: 4 }, pt: 1, pb: 3 }}>
         <Toolbar
@@ -156,8 +165,8 @@ export default function TableUser() {
 
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{user.phone}</TableCell>
-                    <TableCell>{user?.address?.street ?? "-"}</TableCell>
-                    <TableCell>{user.website ?? "-"}</TableCell>
+                    <TableCell>{user?.address?.street ?? "--"}</TableCell>
+                    <TableCell>{user.website ?? "--"}</TableCell>
                     <TableCell>{user.company?.name ?? "-"}</TableCell>
 
                     <TableCell padding="checkbox" align="right">
@@ -166,21 +175,24 @@ export default function TableUser() {
                         onFocusRow={focusRow}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onShow={handleShowDetail}
                       />
                     </TableCell>
                   </TableRow>
                 );
               })}
+
+              {usersState.status === FetchState.LOADING ? <TableUserSkeleton /> : null}
             </TableBody>
           </Table>
-          {usersState.userList.length < 1 ? (
+
+          {usersState.status !== FetchState.LOADING && usersState.userList.length < 1 ? (
             <EmptyTable
-              image="/images/empty-search.png"
+              image="/images/not-found.jpg"
               title="No Users Available"
               description="There are no users in the system yet. Start by adding a new user to manage profiles and information efficiently."
             />
           ) : null}
-          {usersState.status === FetchState.LOADING ? <TableUserSkeleton /> : null}
         </TableContainer>
       </Box>
     </>
