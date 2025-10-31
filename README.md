@@ -29,17 +29,20 @@ It is designed to highlight scalable frontend structure, state management with R
 ```bash
 obs-test/
 ├── src/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── index.css
 │   ├── components/
 │   │   ├── user-list/
 │   │   ├── common/
-│   │   ├── modal/
-│   │   └── App.tsx
+│   │   ├── user-form/
+│   │   └── modal/
+│   ├── interface/
+│   ├── network/
 │   ├── redux/
-│   ├── main.tsx
-│   └── index.css
-├── tests/
-│   ├── mockUsers.ts
-│   └── renderWithAllProviders.tsx
+│   └── tests/
+│       ├── mockUsers.ts
+│       └── renderWithAllProviders.tsx
 ├── .eslintrc.js
 ├── .prettierrc
 ├── vite.config.ts
