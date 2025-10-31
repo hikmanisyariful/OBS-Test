@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   Box,
   Paper,
@@ -12,12 +12,14 @@ import {
   TableRow,
   Checkbox,
   Toolbar,
-  Button,
+  Skeleton,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import Action from "./Action";
 import { ModalUserDelete, ModalUserForm } from "../modal";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { FetchState } from "../../interfaces/Fetch";
+import { useSelectedUserContextContext } from "./context/SelectedUserContext";
+import { setIsEditForm } from "../../redux/reducers/userForm";
 
 interface User {
   id: number;
@@ -28,54 +30,6 @@ interface User {
   website?: string;
   company?: { name: string };
 }
-
-const users: User[] = [
-  {
-    id: 1,
-    name: "Leanne Graham",
-    username: "Bret",
-    email: "Sincere@april.biz",
-    phone: "1-770-736-8031",
-    website: "hildegard.org",
-    company: { name: "Romaguera-Crona" },
-  },
-  {
-    id: 2,
-    name: "Ervin Howell",
-    username: "Antonette",
-    email: "Shanna@melissa.tv",
-    phone: "010-692-6593",
-    website: "anastasia.net",
-    company: { name: "Deckow-Crist" },
-  },
-  {
-    id: 3,
-    name: "Clementine Bauch",
-    username: "Samantha",
-    email: "Nathan@yesenia.net",
-    phone: "1-463-123-4447",
-    website: "ramiro.info",
-    company: { name: "Romaguera-Jacobson" },
-  },
-  {
-    id: 4,
-    name: "Patricia Lebsack",
-    username: "Karianne",
-    email: "Julianne.OConner@kory.org",
-    phone: "493-170-9623",
-    website: "kale.biz",
-    company: { name: "Robel-Corkery" },
-  },
-  {
-    id: 5,
-    name: "Chelsey Dietrich",
-    username: "Kamren",
-    email: "Lucio_Hettinger@annie.ca",
-    phone: "(254)954-1289",
-    website: "demarco.info",
-    company: { name: "Keebler LLC" },
-  },
-];
 
 function Profile({ user }: { user: User }) {
   return (
@@ -92,37 +46,22 @@ function Profile({ user }: { user: User }) {
 }
 
 export default function TableUser() {
-  const [isEditForm, setIsEditForm] = React.useState(false);
-  const [openModalUserForm, setOpenModalUserForm] = React.useState(false);
-  const [openModalConfirmDelete, setOpenModalConfirmDelete] = React.useState(false);
+  const dispatch = useAppDispatch();
+  const usersState = useAppSelector((state) => state.users);
+  const userFormState = useAppSelector((state) => state.userForm);
 
-  // daftar id yang terpilih
-  const [selected, setSelected] = React.useState<number[]>([]);
+  const { selected, isAllSelected, isIndeterminate, toggleAll, toggleOne, isSelected, focusRow } =
+    useSelectedUserContextContext();
 
-  const allIds = React.useMemo(() => users.map((u) => u.id), []);
-  const isAllSelected = selected.length === users.length && users.length > 0;
-  const isIndeterminate = selected.length > 0 && selected.length < users.length;
+  const [openModalUserForm, setOpenModalUserForm] = useState(false);
+  const [openModalConfirmDelete, setOpenModalConfirmDelete] = useState(false);
 
-  const toggleAll = (checked: boolean) => {
-    setSelected(checked ? allIds : []);
-  };
-
-  const toggleOne = (id: number) => {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
-  const isSelected = (id: number) => selected.includes(id);
-
-  // fokuskan selection ke baris ini saja
-  const focusRow = (id: number) => setSelected([id]);
   const handleEdit = (id: number) => {
-    // aksi edit…
     setOpenModalUserForm(true);
     console.log("edit", id);
-    setIsEditForm(true);
+    dispatch(setIsEditForm(true));
   };
   const handleDelete = (id: number) => {
-    // aksi delete…
     console.log("delete", id);
     setOpenModalConfirmDelete(true);
   };
@@ -132,47 +71,14 @@ export default function TableUser() {
       <ModalUserForm
         open={openModalUserForm}
         onClose={() => setOpenModalUserForm(false)}
-        isEdit={isEditForm}
+        isEdit={userFormState.isEdit}
       />
       <ModalUserDelete
         open={openModalConfirmDelete}
         onClose={() => setOpenModalConfirmDelete(false)}
       />
 
-      <Box sx={{ width: "100vw", px: { xs: 1, sm: 2, md: 4 }, py: 3 }}>
-        {/* Toolbar sederhana yang menampilkan jumlah pilihan */}
-        <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end gap-2">
-          {selected.length > 0 ? (
-            <Button
-              id="delete-selection-button"
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteIcon />}
-              onClick={() => {
-                setOpenModalConfirmDelete(true);
-              }}
-              disabled={selected.length === 0}
-              className="order-2 sm:order-1"
-            >
-              Delete {selected.length} {selected.length === 1 ? "user" : "users"}
-            </Button>
-          ) : null}
-
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setIsEditForm(false);
-              setOpenModalUserForm(true);
-              toggleAll(false);
-            }}
-            className="order-1 sm:order-2"
-          >
-            Add New User
-          </Button>
-        </div>
-
+      <Box sx={{ width: "100vw", px: { xs: 1, sm: 2, md: 4 }, pt: 1, pb: 3 }}>
         <Toolbar
           data-testid="table-user-toolbar"
           disableGutters
@@ -219,52 +125,54 @@ export default function TableUser() {
             </TableHead>
 
             <TableBody>
-              {users.map((user) => {
-                const checked = isSelected(user.id);
-                return (
-                  <TableRow
-                    key={user.id}
-                    hover
-                    role="checkbox"
-                    aria-checked={checked}
-                    selected={checked}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={checked}
-                        onChange={() => toggleOne(user.id)}
-                        slotProps={{
-                          input: {
-                            "aria-label": `select user ${user.id}`,
-                          },
-                        }}
-                      />
-                    </TableCell>
+              {usersState.status === FetchState.LOADING ? <Skeleton /> : null}
+              {usersState.status === FetchState.SUCCESS &&
+                usersState.userList.map((user) => {
+                  const checked = isSelected(user.id);
+                  return (
+                    <TableRow
+                      key={user.id}
+                      hover
+                      role="checkbox"
+                      aria-checked={checked}
+                      selected={checked}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={checked}
+                          onChange={() => toggleOne(user.id)}
+                          slotProps={{
+                            input: {
+                              "aria-label": `select user ${user.id}`,
+                            },
+                          }}
+                        />
+                      </TableCell>
 
-                    <TableCell>{user.id}</TableCell>
+                      <TableCell>{user.id}</TableCell>
 
-                    <TableCell>
-                      <Profile user={user} />
-                    </TableCell>
+                      <TableCell>
+                        <Profile user={user} />
+                      </TableCell>
 
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.phone ?? "-"}</TableCell>
-                    <TableCell>{user.website ?? "-"}</TableCell>
-                    <TableCell>{user.company?.name ?? "-"}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.phone}</TableCell>
+                      <TableCell>{user.address.street ?? "-"}</TableCell>
+                      <TableCell>{user.website ?? "-"}</TableCell>
+                      <TableCell>{user.company?.name ?? "-"}</TableCell>
 
-                    <TableCell padding="checkbox" align="right">
-                      <Action
-                        rowId={user.id}
-                        onFocusRow={focusRow}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      <TableCell padding="checkbox" align="right">
+                        <Action
+                          rowId={user.id}
+                          onFocusRow={focusRow}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>
